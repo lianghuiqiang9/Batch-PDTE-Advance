@@ -119,3 +119,27 @@ cdcmp-pdte
 ./cdcmp_pdte_esm -t ../data/breast_31bits/model.json -v ../data/breast_31bits/x_test.csv -r 1 -n 64 -c 0
 ./cdcmp_pdte_esm -t ../data/breast_31bits/model.json -v ../data/breast_31bits/x_test.csv -r 1 -n 128 -c 0
 
+# Compare with the Sortinghat
+
+cd sortinghat_bench
+
+cargo build --release
+
+cargo run --release ../data/heart_11bits 10
+
+cargo run --release ../data/breast_11bits 10
+
+cargo run --release ../data/spam_11bits 10
+
+cargo run --release ../data/electricity_10bits 10
+
+# compare with the level up
+
+cd level_up_bench
+
+cd cmp_bench
+
+g++ -o cmp -O3 cmp_bench.cpp utils.cpp -I /usr/local/include/SEAL-4.1 -lseal-4.1
+
+cd ..
+bash 
