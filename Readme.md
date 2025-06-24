@@ -137,9 +137,4 @@ cargo run --release ../data/electricity_10bits 10
 
 cd level_up_bench
 
-cd cmp_bench
-
-g++ -o cmp -O3 cmp_bench.cpp utils.cpp -I /usr/local/include/SEAL-4.1 -lseal-4.1
-
-cd ..
-bash 
+Read readme.md first.
