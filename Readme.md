@@ -1,5 +1,5 @@
 
-# Install libcdte.so
+# Install libcmp.so
 cd CMP
 bash installCMP.sh
 cd ..
