@@ -137,4 +137,4 @@ cargo run --release ../data/electricity_10bits 10
 
 cd level_up_bench
 
-Read readme.md first.
+Read level_up_bench/readme.md first.
