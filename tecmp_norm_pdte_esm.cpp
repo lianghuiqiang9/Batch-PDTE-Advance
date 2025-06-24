@@ -31,6 +31,7 @@ void pdte_tecmp_norm_rec(vector<Ciphertext>& out,Node& node, Evaluator *evaluato
 }
 
 //g++ -o tecmp_norm_pdte -O3 tecmp_norm_pdte.cpp src/utils.cpp src/cmp.cpp src/node.cpp src/pdte.cpp -I./include -I /usr/local/include/SEAL-4.1 -lseal-4.1
+//./tecmp_norm_pdte_esm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 2048 -l 4 -m 3 -c 1 -e 8
 
 int main(int argc, char* argv[]){
     if (argc < 3) {
