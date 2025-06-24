@@ -73,13 +73,13 @@ void pdte_rdcmp_iter(
             evaluator->add_inplace(node->left->value, node->value);
             evaluator->add_inplace(node->right->value, node->value);
 
-            // 标记第二次访问
+
             stk.push({ node, true });
-            // 先右后左入栈，保证左子树先访问
-            stk.push({ node->right.get(), false }); // 如果是智能指针，使用 get()
+
+            stk.push({ node->right.get(), false }); 
             stk.push({ node->left.get(), false });
         }
-        // 第二次访问不需操作
+
     }
 }
 

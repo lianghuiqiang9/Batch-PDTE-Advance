@@ -39,7 +39,6 @@ std::vector<std::vector<uint64_t>> read_csv_to_vector(std::string address,int da
         std::stringstream lineStream(line);
         std::string cell;
 
-        // 按逗号分隔值并将它们转换为整数并存储到向量中
         while (std::getline(lineStream, cell, ',')) {
             uint64_t cellValue;
             std::istringstream(cell) >> cellValue;

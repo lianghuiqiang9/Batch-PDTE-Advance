@@ -57,13 +57,13 @@ void pdte_tecmp_norm_iter(
         Node* node = frame.node;
 
         if (node->is_leaf()) {
-            // 叶子节点直接输出
+
             out.push_back(node->value);
             continue;
         }
 
         if (!frame.visited) {
-            // 初次访问，执行同态比较，更新左右子节点值
+
             node->right->value = tecmp_norm(
                 evaluator, gal_keys_server, rlk_server,
                 node->threshold_bitv,
@@ -76,14 +76,14 @@ void pdte_tecmp_norm_iter(
             evaluator->add_inplace(node->left->value, node->value);
             evaluator->add_inplace(node->right->value, node->value);
 
-            // 标记第二次访问
+
             stk.push(StackFrame{ node, true });
 
-            // 先压右子树，再压左子树（栈后进先出，保证先访问左子树）
-            stk.push(StackFrame{ node->right.get(), false }); // 若Node智能指针用get()
+    
+            stk.push(StackFrame{ node->right.get(), false }); 
             stk.push(StackFrame{ node->left.get(), false });
         }
-        // 第二次访问时无需额外操作，叶子已处理
+
     }
 }
 

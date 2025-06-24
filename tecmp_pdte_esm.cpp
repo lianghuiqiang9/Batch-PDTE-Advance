@@ -57,13 +57,13 @@ void pdte_tecmp_iter(
         Node* node = frame.node;
 
         if (node->is_leaf()) {
-            // 叶子节点直接加入结果
+   
             out.push_back(node->value);
             continue;
         }
 
         if (!frame.visited) {
-            // 首次访问：进行比较计算，更新左右子节点的值
+ 
             node->right->value = tecmp(
                 evaluator, gal_keys_server, rlk_server,
                 node->threshold_bitv,
@@ -76,13 +76,13 @@ void pdte_tecmp_iter(
             evaluator->add_inplace(node->left->value, node->value);
             evaluator->add_inplace(node->right->value, node->value);
 
-            // 第一次处理完当前节点，压回栈中用于第二次访问（叶子判断）
+  
             stk.push(StackFrame{ node, true });
-            // 先压右子树，再压左子树（因为栈是 LIFO，先处理左子树）
+    
             stk.push(StackFrame{ node->right.get(), false });
             stk.push(StackFrame{ node->left.get(), false });
         }
-        // 如果是第二次访问，说明左右子树已经处理完了，不需要额外操作
+  
     }
 }
 

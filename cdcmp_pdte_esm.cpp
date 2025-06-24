@@ -76,14 +76,14 @@ void pdte_cdcmp_iter(
             evaluator->add_inplace(node->left->value, node->value);
             evaluator->add_inplace(node->right->value, node->value);
 
-            // 标记该节点第二次访问
+
             stk.push({ node, true });
 
-            // 先压右子节点，再压左子节点，保证先遍历左子节点
-            stk.push({ node->right.get(), false });  // 如果Node是智能指针，使用get()
+  
+            stk.push({ node->right.get(), false });
             stk.push({ node->left.get(), false });
         }
-        // 第二次访问不需操作
+
     }
 }
 

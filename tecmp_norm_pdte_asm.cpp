@@ -63,7 +63,7 @@ void pdte_tecmp_norm_iter(
         }
 
         if (!frame.visited) {
-            // 执行同态比较计算，更新左右子节点的值
+  
             node->right->value = tecmp_norm(
                 evaluator, gal_keys_server, rlk_server,
                 node->threshold_bitv,
@@ -76,13 +76,13 @@ void pdte_tecmp_norm_iter(
             evaluator->add_inplace(node->left->value, node->value);
             evaluator->add_inplace(node->right->value, node->value);
 
-            // 标记该节点第二次访问
+
             stk.push({node, true});
-            // 先压右子树，再压左子树，保证先遍历左子树
-            stk.push({node->right.get(), false}); // 如果是智能指针，用 get()
+
+            stk.push({node->right.get(), false}); 
             stk.push({node->left.get(), false});
         }
-        // 第二次访问无需操作
+
     }
 }
 
