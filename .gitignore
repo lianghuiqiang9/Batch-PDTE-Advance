@@ -1,0 +1,8 @@
+build/*
+CMP/build/*
+CMP/lib/*
+cmp_bench/build/*
+data/heart_16bits
+data/heart_32bits
+data/breast_16bits
+data/breast_32bits
