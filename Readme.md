@@ -1,7 +1,7 @@
 
-# Install libcdte.so
-cd CDTE
-bash installCDTE.sh
+# Install libcmp.so
+cd CMP
+bash installCMP.sh
 cd ..
 
 
@@ -43,7 +43,8 @@ cd build
 ./tecmp -l 2048 -m 13
 
 # build_pdte
-
+cd ..
+cd ..
 bash build_pdte.sh
 cd build
 
