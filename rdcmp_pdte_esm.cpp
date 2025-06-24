@@ -280,9 +280,6 @@ int main(int argc, char* argv[]){
     
     cout<<"decrypt the result ,                 run time is "<<(clock()-start)/1000 <<"ms"<<endl;start = clock();
 
-    cout<<"result compare"<<endl;
-
-
     for(int j = 0; j < data_m ; j++){
         uint64_t actural_result = root.eval(client_data[j]);
         //cout<< expect_result[j] <<" "<<actural_result<< endl;

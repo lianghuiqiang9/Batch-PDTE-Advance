@@ -287,8 +287,6 @@ int main(int argc, char* argv[]){
     if(expect_result.size()<data_m){cout<<"depth_need_min is too small, please the params again by add the extra value."<<endl;exit(0);}
 
     cout<<"decrypt the result ,                 run time is "<<(clock()-start) <<"\\mus"<<endl;start = clock();
-
-    cout<<"result compare"<<endl;
     
     for(int j = 0; j < data_m ; j++){
         //cout<<"j = "<<j<<" ";
