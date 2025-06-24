@@ -335,3 +335,24 @@ void leaf_extract_rec(vector<uint64_t>& out,Node& node ){
         leaf_extract_rec(out, *(node.right));
     }
 }
+
+
+void leaf_extract_iter(vector<uint64_t>& out, Node& root) {
+    stack<StackFrame> stk;
+    stk.push({&root});
+
+    while (!stk.empty()) {
+        StackFrame frame = stk.top();
+        stk.pop();
+
+        Node* node = frame.node;
+
+        if (node->is_leaf()) {
+            out.push_back(node->class_leaf);
+        } else {
+            // 先压右子节点，再压左子节点，保证左子节点先处理
+            if (node->right) stk.push({node->right.get()});  // 如果是智能指针用 get()
+            if (node->left) stk.push({node->left.get()});
+        }
+    }
+}

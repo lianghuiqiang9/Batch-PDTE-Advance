@@ -7,6 +7,7 @@
 #include "cmp.h"
 #include "pdte.h"
 #include<seal/seal.h>
+#include <stack>
 
 using namespace std;
 using namespace seal;
@@ -27,6 +28,62 @@ void pdte_tecmp_norm_rec(vector<Ciphertext>& out,Node& node, Evaluator *evaluato
         evaluator->add_inplace(node.right->value, node.value);
         pdte_tecmp_norm_rec(out, *(node.left), evaluator,gal_keys_server, rlk_server, client_input,one,l,m,m_degree,  batch_encoder,slot_count, plain_modulus,one_zero_init_cipher);
         pdte_tecmp_norm_rec(out, *(node.right), evaluator,gal_keys_server, rlk_server, client_input,one,l,m,m_degree,  batch_encoder,slot_count, plain_modulus,one_zero_init_cipher);
+    }
+}
+
+void pdte_tecmp_norm_iter(
+    vector<Ciphertext>& out,
+    Node& root,
+    Evaluator* evaluator,
+    GaloisKeys* gal_keys_server,
+    RelinKeys* rlk_server,
+    const vector<vector<Ciphertext>>& client_input,
+    const Plaintext& one,
+    int l,
+    int m,
+    uint64_t m_degree,
+    BatchEncoder* batch_encoder,
+    int slot_count,
+    int plain_modulus,
+    const seal::Ciphertext& one_zero_init_cipher
+) {
+    stack<StackFrame> stk;
+    stk.push(StackFrame{ &root, false });
+
+    while (!stk.empty()) {
+        StackFrame frame = stk.top();
+        stk.pop();
+
+        Node* node = frame.node;
+
+        if (node->is_leaf()) {
+            // 叶子节点直接输出
+            out.push_back(node->value);
+            continue;
+        }
+
+        if (!frame.visited) {
+            // 初次访问，执行同态比较，更新左右子节点值
+            node->right->value = tecmp_norm(
+                evaluator, gal_keys_server, rlk_server,
+                node->threshold_bitv,
+                client_input[node->feature_index],
+                l, m, m_degree,
+                one_zero_init_cipher
+            );
+            evaluator->negate(node->right->value, node->left->value);
+            evaluator->add_plain_inplace(node->left->value, one);
+            evaluator->add_inplace(node->left->value, node->value);
+            evaluator->add_inplace(node->right->value, node->value);
+
+            // 标记第二次访问
+            stk.push(StackFrame{ node, true });
+
+            // 先压右子树，再压左子树（栈后进先出，保证先访问左子树）
+            stk.push(StackFrame{ node->right.get(), false }); // 若Node智能指针用get()
+            stk.push(StackFrame{ node->left.get(), false });
+        }
+        // 第二次访问时无需额外操作，叶子已处理
     }
 }
 
@@ -152,10 +209,10 @@ int main(int argc, char* argv[]){
 
     vector<Ciphertext> pdte_out;
     start = clock();
-    pdte_tecmp_norm_rec( pdte_out, root, evaluator, gal_keys_server, rlk_server, client_input, one, l, m,m_degree, batch_encoder, slot_count, plain_modulus, one_zero_zero_cipher);
+    pdte_tecmp_norm_iter( pdte_out, root, evaluator, gal_keys_server, rlk_server, client_input, one, l, m,m_degree, batch_encoder, slot_count, plain_modulus, one_zero_zero_cipher);
 
     vector<uint64_t> leaf_vec;
-    leaf_extract_rec(leaf_vec, root);
+    leaf_extract_iter(leaf_vec, root);
     int leaf_num = leaf_vec.size();
 
 

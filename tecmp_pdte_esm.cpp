@@ -7,6 +7,7 @@
 #include "cmp.h"
 #include "pdte.h"
 #include<seal/seal.h>
+#include <stack>
 
 using namespace std;
 using namespace seal;
@@ -29,6 +30,62 @@ void pdte_tecmp_rec(vector<Ciphertext>& out,Node& node, Evaluator *evaluator,Gal
         pdte_tecmp_rec(out, *(node.right), evaluator,gal_keys_server, rlk_server, client_input,one,l,m,m_degree,  batch_encoder,slot_count, plain_modulus,one_zero_init_cipher);
     }
 }
+
+void pdte_tecmp_iter(
+    vector<Ciphertext>& out,
+    Node& root,
+    Evaluator* evaluator,
+    GaloisKeys* gal_keys_server,
+    RelinKeys* rlk_server,
+    const vector<vector<Ciphertext>>& client_input,
+    const Plaintext& one,
+    int l,
+    int m,
+    uint64_t m_degree,
+    BatchEncoder* batch_encoder,
+    int slot_count,
+    int plain_modulus,
+    const seal::Ciphertext& one_zero_init_cipher
+) {
+    stack<StackFrame> stk;
+    stk.push({ &root, false });
+
+    while (!stk.empty()) {
+        StackFrame frame = stk.top();
+        stk.pop();
+
+        Node* node = frame.node;
+
+        if (node->is_leaf()) {
+            // 叶子节点直接加入结果
+            out.push_back(node->value);
+            continue;
+        }
+
+        if (!frame.visited) {
+            // 首次访问：进行比较计算，更新左右子节点的值
+            node->right->value = tecmp(
+                evaluator, gal_keys_server, rlk_server,
+                node->threshold_bitv,
+                client_input[node->feature_index],
+                l, m, m_degree,
+                one_zero_init_cipher
+            );
+            evaluator->negate(node->right->value, node->left->value);
+            evaluator->add_plain_inplace(node->left->value, one);
+            evaluator->add_inplace(node->left->value, node->value);
+            evaluator->add_inplace(node->right->value, node->value);
+
+            // 第一次处理完当前节点，压回栈中用于第二次访问（叶子判断）
+            stk.push(StackFrame{ node, true });
+            // 先压右子树，再压左子树（因为栈是 LIFO，先处理左子树）
+            stk.push(StackFrame{ node->right.get(), false });
+            stk.push(StackFrame{ node->left.get(), false });
+        }
+        // 如果是第二次访问，说明左右子树已经处理完了，不需要额外操作
+    }
+}
+
 
 //g++ -o tecmp_pdte -O3 tecmp_pdte.cpp src/utils.cpp src/cmp.cpp src/node.cpp src/pdte.cpp -I./include -I /usr/local/include/SEAL-4.1 -lseal-4.1
 
@@ -150,10 +207,10 @@ int main(int argc, char* argv[]){
 
     vector<Ciphertext> pdte_out;
     start = clock();
-    pdte_tecmp_rec( pdte_out, root, evaluator, gal_keys_server, rlk_server, client_input, one, l, m,m_degree, batch_encoder, slot_count, plain_modulus, one_zero_zero_cipher);
+    pdte_tecmp_iter( pdte_out, root, evaluator, gal_keys_server, rlk_server, client_input, one, l, m,m_degree, batch_encoder, slot_count, plain_modulus, one_zero_zero_cipher);
 
     vector<uint64_t> leaf_vec;
-    leaf_extract_rec(leaf_vec, root);
+    leaf_extract_iter(leaf_vec, root);
     int leaf_num = leaf_vec.size();
 
 

@@ -7,6 +7,7 @@
 #include "cmp.h"
 #include "pdte.h"
 #include<seal/seal.h>
+#include <stack>
 
 using namespace std;
 using namespace seal;
@@ -27,6 +28,63 @@ void pdte_tecmp_rec(vector<Ciphertext>& out,Node& node, Evaluator *evaluator,Gal
         evaluator->add_inplace(node.right->value, node.value);
         pdte_tecmp_rec(out, *(node.left), evaluator,gal_keys_server, rlk_server, client_input,one,l,m,m_degree,  batch_encoder,slot_count, plain_modulus,one_zero_init_cipher);
         pdte_tecmp_rec(out, *(node.right), evaluator,gal_keys_server, rlk_server, client_input,one,l,m,m_degree,  batch_encoder,slot_count, plain_modulus,one_zero_init_cipher);
+    }
+}
+
+
+void pdte_tecmp_norm_iter(
+    vector<Ciphertext>& out,
+    Node& root,
+    Evaluator* evaluator,
+    GaloisKeys* gal_keys_server,
+    RelinKeys* rlk_server,
+    const vector<vector<Ciphertext>>& client_input,
+    const Plaintext& one,
+    int l,
+    int m,
+    uint64_t m_degree,
+    BatchEncoder* batch_encoder,
+    int slot_count,
+    int plain_modulus,
+    const seal::Ciphertext& one_zero_init_cipher
+) {
+    stack<StackFrame> stk;
+    stk.push({ &root, false });
+
+    while (!stk.empty()) {
+        StackFrame frame = stk.top();
+        stk.pop();
+
+        Node* node = frame.node;
+
+        if (node->is_leaf()) {
+            // 叶子节点，直接收集结果
+            out.push_back(node->value);
+            continue;
+        }
+
+        if (!frame.visited) {
+            // 首次访问：处理该节点的左右子节点的 value
+            node->right->value = tecmp_norm(
+                evaluator, gal_keys_server, rlk_server,
+                node->threshold_bitv,
+                client_input[node->feature_index],
+                l, m, m_degree,
+                one_zero_init_cipher
+            );
+
+            evaluator->negate(node->right->value, node->left->value);
+            evaluator->add_plain_inplace(node->left->value, one);
+            evaluator->add_inplace(node->left->value, node->value);
+            evaluator->add_inplace(node->right->value, node->value);
+
+            // 第一次处理完当前节点，压回栈中用于第二次访问（叶子判断）
+            stk.push(StackFrame{ node, true });
+            // 先压右子树，再压左子树（因为栈是 LIFO，先处理左子树）
+            stk.push(StackFrame{ node->right.get(), false });
+            stk.push(StackFrame{ node->left.get(), false });
+        }
+        // 第二次访问不用做事，叶子节点在上面已处理
     }
 }
 
@@ -152,7 +210,7 @@ int main(int argc, char* argv[]){
     start = clock();
 
     vector<Ciphertext> pdte_out;
-    pdte_tecmp_rec( pdte_out, root, evaluator, gal_keys_server, rlk_server, client_input, one, l, m,m_degree, batch_encoder, slot_count, plain_modulus, one_zero_init_cipher);
+    pdte_tecmp_norm_iter( pdte_out, root, evaluator, gal_keys_server, rlk_server, client_input, one, l, m,m_degree, batch_encoder, slot_count, plain_modulus, one_zero_init_cipher);
 
     uint64_t tree_depth = root.get_depth();
     cout<<"tree_depth : "<<tree_depth<<endl;
@@ -168,7 +226,7 @@ int main(int argc, char* argv[]){
     }
     
     vector<uint64_t> leaf_vec;
-    leaf_extract_rec(leaf_vec, root);
+    leaf_extract_iter(leaf_vec, root);
     vector<Plaintext> leaf_vec_plain;
     for(int i = 0; i<leaf_vec.size(); i++){
         Plaintext pt = init_b_zero_zero(batch_encoder,leaf_vec[i],slot_count,data_m,num_cmps_per_row,num_slots_per_element,row_count); 
