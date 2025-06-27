@@ -1,3 +1,10 @@
+# Benckmark
+The data presented in Figure 5, Figure 6, and Table 8 was obtained through tests described in benchmark.md.
+
+
+
+# Main
+Testing Our Program
 
 # Install libcmp.so
 cd CMP
