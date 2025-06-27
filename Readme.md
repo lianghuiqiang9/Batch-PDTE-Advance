@@ -65,8 +65,8 @@ cd build
 
 ./tecmp_pdte_esm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 2048 -l 4 -m 3 -c 1 -e 10
 ./tecmp_pdte_esm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 2048 -l 4 -m 3 -c 1 -e 10
-./tecmp_pdte_esm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 1024 -l 4 -m 3 -c 1 -e 10
-./tecmp_pdte_esm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 1024 -l 4 -m 3 -c 1 -e 10
+./tecmp_pdte_esm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 2048 -l 4 -m 3 -c 1 -e 10
+./tecmp_pdte_esm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 2048 -l 4 -m 3 -c 1 -e 10
 
 ./rdcmp_pdte_esm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 512 -n 16 -c 1 -e 7
 ./rdcmp_pdte_esm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 512 -n 16 -c 1 -e 7
