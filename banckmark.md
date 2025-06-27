@@ -104,13 +104,6 @@ cd build
 
 # Table 8 
 
-# ours
-
-./tecmp_pdte_asm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 4 -l 1 -m 11 -d 3 
-./tecmp_pdte_asm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 8 -l 1 -m 11 -d 7
-./tecmp_pdte_asm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 8 -l 1 -m 11 -d 16
-./tecmp_pdte_asm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 8 -l 1 -m 10 -d 10 -e 1
-
 # compare with the Sortinghat
 
 cd sortinghat_bench
@@ -170,4 +163,22 @@ cd build
 
 ./main -v -m ../../../data/electricity_10bits/model.json -a ../../../data/electricity_10bits/x_test.csv -s ../../experiments/xxcmp-electricity_10bits -n 10
 
+# Table 9
+
+# ours
+
+./tecmp_pdte_asm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 4 -l 1 -m 11 -d 3 
+./tecmp_pdte_asm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 4 -l 1 -m 11 -d 7
+./tecmp_pdte_asm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 4 -l 1 -m 11 -d 16
+./tecmp_pdte_asm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 4 -l 1 -m 10 -d 10 -e 1
+
+./tecmp_pdte_asm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 256 -l 2 -m 6 -d 3 -e 2
+./tecmp_pdte_asm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 256 -l 2 -m 6 -d 7 -e 1
+./tecmp_pdte_asm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 256 -l 2 -m 6 -d 16
+./tecmp_pdte_asm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 256 -l 2 -m 5 -d 10 -e 1
+
+./tecmp_pdte_asm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 2048 -l 4 -m 3 -d 3 -e 1
+./tecmp_pdte_asm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 2048 -l 4 -m 3 -d 7
+./tecmp_pdte_asm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 2048 -l 4 -m 3 -d 16
+./tecmp_pdte_asm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 2048 -l 4 -m 3 -d 10
 
