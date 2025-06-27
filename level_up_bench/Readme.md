@@ -49,7 +49,7 @@ cd build
 cd ..
 cd ..
 cd src2
-bash build_pdte
+bash build_pdte.sh
 cd build
 
 ./main -v -m ../../../data/heart_11bits/model.json -a ../../../data/heart_11bits/x_test.csv -s ../../experiments/xxcmp-heart_11bits -n 11
@@ -96,7 +96,7 @@ cd build
 cd ..
 cd ..
 cd src2
-bash build_pdte
+bash build_pdte.sh
 cd build
 
 ./main -v -m ../../../data/breast_11bits/model.json -a ../../../data/breast_11bits/x_test.csv -s ../../experiments/xxcmp-12-breast_11bits -n 12

@@ -1,4 +1,6 @@
 
+# Figure 5
+
 # Install libcmp.so
 cd CMP
 bash installCMP.sh
@@ -36,6 +38,28 @@ cd build
 ./cdcmp -n 256
 ./cdcmp -n 512
 ./cdcmp -n 1024
+
+# compare with the level up
+
+cd level_up_bench
+
+cd cmp_bench
+
+g++ -o cmp -O3 cmp_bench.cpp utils.cpp -I /usr/local/include/SEAL-4.1 -lseal-4.1
+
+./cmp -n 8
+./cmp -n 12
+./cmp -n 16
+./cmp -n 32
+./cmp -n 64
+./cmp -n 128
+./cmp -n 256
+./cmp -n 512
+./cmp -n 1024
+
+
+# Figure 6
+
 
 # pdte
 cd ..
@@ -78,6 +102,15 @@ cd build
 ./cdcmp_pdte_esm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 256 -n 16 -c 1 -e 7
 ./cdcmp_pdte_esm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 256 -n 16 -c 1 -e 7
 
+# Table 8 
+
+# ours
+
+./tecmp_pdte_asm -t ../data/heart_11bits/model.json -v ../data/heart_11bits/x_test.csv -r 4 -l 1 -m 11 -d 3 
+./tecmp_pdte_asm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 8 -l 1 -m 11 -d 7
+./tecmp_pdte_asm -t ../data/spam_11bits/model.json -v ../data/spam_11bits/x_test.csv -r 8 -l 1 -m 11 -d 16
+./tecmp_pdte_asm -t ../data/electricity_10bits/model.json -v ../data/electricity_10bits/x_test.csv -r 8 -l 1 -m 10 -d 10 -e 1
+
 # compare with the Sortinghat
 
 cd sortinghat_bench
@@ -96,51 +129,45 @@ cargo run --release ../data/electricity_10bits 10
 
 cd level_up_bench
 
-Should read level_up_bench/readme.md first.
+cd .. 
+cd src
+bash build_pdte.sh
+cd build
 
-# The other test, high-precision in single row
+## RCC
 
-## new data 
+./main  -t ../../../data/heart_11bits/model.json -v ../../../data/heart_11bits/x_test.csv -s ../../experiments/rcc-heart_11bits -n 11 -w 4 -e 0
 
-mkdir ../data/heart_16bits 
-./new_tree_and_data -i ../data/heart_11bits -o ../data/heart_16bits -n 16 -s 16384 
+./main  -t ../../../data/breast_11bits/model.json -v ../../../data/breast_11bits/x_test.csv -s ../../experiments/rcc-breast_11bits -n 11 -w 4 -e 0
 
-mkdir ../data/heart_32bits 
-./new_tree_and_data -i ../data/heart_11bits -o ../data/heart_32bits -n 32 -s 16384 
+./main  -t ../../../data/spam_11bits/model.json -v ../../../data/spam_11bits/x_test.csv -s ../../experiments/rcc-spam_11bits -n 11 -w 4 -e 0
 
-mkdir ../data/breast_16bits 
-./new_tree_and_data -i ../data/breast_11bits -o ../data/breast_16bits -n 16 -s 16384 
+./main  -t ../../data/electricity_10bits/model.json -v ../../data/electricity_10bits/x_test.csv -s ../../experiments/rcc-electricity_10bits -n 10 -w 4 -e 0
 
-mkdir ../data/breast_32bits 
-./new_tree_and_data -i ../data/breast_11bits -o ../data/breast_32bits -n 32 -s 16384 
+## FOLKLORE
 
-## high-precision in single row
+./main  -t ../../../data/heart_11bits/model.json -v ../../../data/heart_11bits/x_test.csv -s ../../experiments/folklore-heart_11bits -n 11 -w 0 -e 1
 
-### tecmp-pdte
+./main  -t ../../../data/breast_11bits/model.json -v ../../../data/breast_11bits/x_test.csv -s ../../experiments/folklore-breast_11bits -n 11 -w 0 -e 1
 
-./tecmp_pdte_esm -t ../data/breast_11bits/model.json -v ../data/breast_11bits/x_test.csv -r 1 -l 1 -m 12 -c 0
-./tecmp_pdte_esm -t ../data/breast_16bits/model.json -v ../data/breast_16bits/x_test.csv -r 1 -l 2 -m 12 -c 0
-./tecmp_pdte_esm -t ../data/breast_31bits/model.json -v ../data/breast_31bits/x_test.csv -r 1 -l 3 -m 12 -c 0
+./main  -t ../../../data/spam_11bits/model.json -v ../../../data/spam_11bits/x_test.csv -s ../../experiments/folklore-spam_11bits -n 11 -w 0 -e 1
+
+./main  -t ../../../data/electricity_10bits/model.json -v ../../../data/electricity_10bits/x_test.csv -s ../../experiments/folklore-electricity_10bits -n 10 -w 0 -e 1
+
+## XXCMP
+
+cd ..
+cd ..
+cd src2
+bash build_pdte.sh
+cd build
+
+./main -v -m ../../../data/heart_11bits/model.json -a ../../../data/heart_11bits/x_test.csv -s ../../experiments/xxcmp-heart_11bits -n 11
+
+./main -v -m ../../../data/breast_11bits/model.json -a ../../../data/breast_11bits/x_test.csv -s ../../experiments/xxcmp-breast_11bits -n 11
+
+./main -v -m ../../../data/spam_11bits/model.json -a ../../../data/spam_11bits/x_test.csv -s ../../experiments/xxcmp-spam_11bits -n 11
+
+./main -v -m ../../../data/electricity_10bits/model.json -a ../../../data/electricity_10bits/x_test.csv -s ../../experiments/xxcmp-electricity_10bits -n 10
 
 
-### cdcmp-pdte
-
-./cdcmp_pdte_esm -t ../data/breast_16bits/model.json -v ../data/breast_11bits/x_test.csv -r 1 -n 16 -c 0
-./cdcmp_pdte_esm -t ../data/breast_16bits/model.json -v ../data/breast_16bits/x_test.csv -r 1 -n 16 -c 0
-./cdcmp_pdte_esm -t ../data/breast_31bits/model.json -v ../data/breast_31bits/x_test.csv -r 1 -n 32 -c 0
-./cdcmp_pdte_esm -t ../data/breast_31bits/model.json -v ../data/breast_31bits/x_test.csv -r 1 -n 64 -c 0
-./cdcmp_pdte_esm -t ../data/breast_31bits/model.json -v ../data/breast_31bits/x_test.csv -r 1 -n 128 -c 0
-
-### depth need text
-
-cd cmp_bench
-
-g++ -o depth_test -O3 depth_test.cpp -I /usr/local/include/SEAL-4.1 -lseal-4.1
-
-./depth_test
-
-## the most bit precision
-
-cd cmp_bench
-
-./tecmp -l 2048 -m 13
